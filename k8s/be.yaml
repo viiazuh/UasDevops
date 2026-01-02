@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diabetes-be
+  namespace: default  # Pakai default saja, gak perlu namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: diabetes-be
+  template:
+    metadata:
+      labels:
+        app: diabetes-be
+    spec:
+      containers:
+      - name: diabetes-app
+        image: docker.io/library/diabetes-app:latest  # ← INI YANG BENAR
+        imagePullPolicy: Never  # ← INI PENTING!
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: diabetes-be-service
+spec:
+  selector:
+    app: diabetes-be
+  ports:
+  - port: 3000
+    targetPort: 5000
+  type: ClusterIP

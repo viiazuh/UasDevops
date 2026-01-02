@@ -1,0 +1,30 @@
+name: Deploy Diabetes App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Build Docker image
+      run: |
+        docker build -t diabetes-app .
+        
+    - name: Test Docker image
+      run: |
+        docker run -d --name test-container -p 5000:5000 diabetes-app
+        sleep 10
+        curl -f http://localhost:5000 || exit 1
+<<<<<<< HEAD
+        docker stop test-container
+=======
+        docker stop test-container
+>>>>>>> 2acf9af (Deploy Diabetes App with CI/CD Pipeline, Kubernetes, HPA, and Monitoring)

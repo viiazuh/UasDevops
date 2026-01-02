@@ -1,0 +1,92 @@
+name: Deploy Diabetes App to Kubernetes
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    
+    - name: Test Python code
+      run: |
+        python -c "import flask; print('✅ Flask installed')"
+        python -c "import joblib; print('✅ Joblib installed')"
+    
+    - name: Build Docker image
+      run: |
+        docker build -t diabetes-app:${{ github.sha }} .
+        docker images
+    
+    - name: Test Docker container
+      run: |
+        docker run -d --name test-container -p 5000:5000 diabetes-app:${{ github.sha }}
+        sleep 5
+        docker ps
+        curl -s http://localhost:5000/ | head -5
+        docker stop test-container
+        docker rm test-container
+
+  deploy-to-kubernetes:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Minikube
+      uses: medyagh/setup-minikube@master
+      with:
+        minikube-version: 'latest'
+    
+    - name: Start Minikube and deploy
+      run: |
+        # Start Minikube
+        minikube start --driver=docker
+        
+        # Build image in Minikube environment
+        eval $(minikube docker-env)
+        docker build -t diabetes-app:${{ github.sha }} .
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f k8s/
+        
+        # Update image in deployment
+        kubectl set image deployment/diabetes-be diabetes-app=diabetes-app:${{ github.sha }}
+        
+        # Wait for deployment
+        kubectl rollout status deployment/diabetes-be --timeout=180s
+        
+        # Show status
+        echo "=== DEPLOYMENT STATUS ==="
+        kubectl get all
+        
+        # Test the deployment
+        echo "=== TESTING DEPLOYMENT ==="
+        kubectl port-forward svc/diabetes-be-service 3000:3000 &
+        BACKEND_PID=$!
+        kubectl port-forward svc/diabetes-fe-service 5000:5000 &
+        FRONTEND_PID=$!
+        
+        sleep 5
+        
+        echo "Testing Backend (port 3000)..."
+        curl -s http://localhost:3000/backend | head -3
+        
+        echo "Testing Frontend (port 5000)..."
+        curl -s http://localhost:5000/ | head -3
+        
+        kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true

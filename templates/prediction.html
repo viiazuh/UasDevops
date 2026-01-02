@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Risiko Diabetes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            background: #e8f4fc;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 30px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .radio-group label:hover {
+            background: #edf2f7;
+        }
+
+        .symptom-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .symptom-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .symptom-item:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        .symptom-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .option input {
+            cursor: pointer;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #submitBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        #submitBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        #resetBtn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Result Styles */
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .result h2 {
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .prediction-content {
+            background-color: white;
+            color: #333;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .prediction-result {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .prediction-main {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .prediction-english {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* Style untuk risk indicator */
+        .risk-indicator {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin: 15px 0;
+            font-size: 1.3rem;
+            border: 3px solid;
+        }
+
+        .risk-low {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .risk-high {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+
+        .recommendation {
+            background-color: #e8f4fc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            line-height: 1.8;
+        }
+
+        .patient-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .symptoms-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .symptom-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1>🩺 Prediksi Risiko Diabetes</h1>
+            <p>Isi form dengan informasi akurat untuk estimasi risiko diabetes. Hasil ini bukan pengganti diagnosis medis.</p>
+        </header>
+
+        <form id="symptomForm">
+            <section class="form-section">
+                <h2>🧍 Informasi Dasar</h2>
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label>Usia (Age):</label>
+                        <input type="number" id="age" name="age" placeholder="Masukkan usia" min="1" max="120" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Jenis Kelamin (Gender):</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="gender" value="Pria" required>
+                                Pria
+                            </label>
+                            <label>
+                                <input type="radio" name="gender" value="Wanita">
+                                Wanita
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>🩺 Gejala dan Faktor Risiko</h2>
+                <div class="section-subtitle">
+                    Pilih "Ya" jika mengalami, "Tidak" jika tidak
+                </div>
+                
+                <div class="symptom-list" id="symptomList">
+                    <!-- Gejala akan dimasukkan di sini oleh JavaScript -->
+                </div>
+            </section>
+            
+            <div class="buttons">
+                <button type="button" id="submitBtn">Prediksi Sekarang</button>
+                <button type="reset" id="resetBtn">Reset Form</button>
+            </div>
+        </form>
+        
+        <div class="result" id="resultContainer">
+            <h2>Prediksi</h2>
+            <div class="prediction-content">
+                <h3 style="text-align: center; color: #2c3e50;">Hasil Prediksi</h3>
+                
+                <div class="patient-info" id="patientInfo">
+                    <!-- Info pasien akan ditampilkan di sini -->
+                </div>
+                
+                <div class="prediction-result">
+                    <div class="prediction-main" id="predictionMain">Normal</div>
+                    <div class="prediction-english" id="predictionEnglish">(Normal)</div>
+                    <div class="risk-indicator risk-low" id="riskIndicator">🟢 AMAN</div>
+                </div>
+
+                <div class="symptoms-summary" id="symptomsSummary">
+                    <!-- Ringkasan gejala akan ditampilkan di sini -->
+                </div>
+                
+                <div class="recommendation" id="recommendation">
+                    Hasil menunjukkan risiko diabetes rendah. Tetap jaga pola hidup sehat dengan diet seimbang dan olahraga teratur.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 16 Fitur sesuai dengan yang diberikan
+        const symptoms = [
+            "Sering buang air kecil (Polyuria)",
+            "Sering haus berlebihan (Polydipsia)", 
+            "Penurunan berat badan mendadak (sudden weight loss)",
+            "Kelemahan (weakness)",
+            "Nafsu makan berlebihan (Polyphagia)",
+            "Infeksi jamur pada alat kelamin (Genital thrush)",
+            "Penglihatan kabur (visual blurring)",
+            "Gatal-gatal (Itching)",
+            "Mudah marah/tersinggung (Irritability)",
+            "Luka sulit sembuh (delayed healing)",
+            "Kelemahan otot sebagian (partial paresis)",
+            "Kekakuan otot (muscle stiffness)",
+            "Kerontokan rambut (Alopecia)",
+            "Kegemukan (Obesity)"
+        ];
+
+        // Mapping nama gejala ke field name backend
+        const symptomFieldMap = {
+            0: "polyuria",
+            1: "polydipsia", 
+            2: "weight_loss",
+            3: "weakness",
+            4: "polyphagia",
+            5: "genital_thrush",
+            6: "visual_blurring",
+            7: "itching",
+            8: "irritability",
+            9: "delayed_healing",
+            10: "partial_paresis",
+            11: "muscle_stiffness",
+            12: "alopecia",
+            13: "obesity"
+        };
+
+        // Rekomendasi berdasarkan hasil prediksi
+        const recommendations = {
+            "Normal": "Hasil menunjukkan risiko diabetes rendah. Tetap jaga pola hidup sehat dengan diet seimbang dan olahraga teratur. Lakukan pemeriksaan rutin setiap tahun.",
+            "Berisiko Diabetes": "Terdapat indikasi risiko diabetes yang perlu diperhatikan. Disarankan untuk berkonsultasi dengan dokter untuk pemeriksaan lebih lanjut seperti tes gula darah. Perbaiki pola makan dan tingkatkan aktivitas fisik."
+        };
+
+        // Fungsi untuk membuat form gejala
+        function createSymptomForm() {
+            const symptomList = document.getElementById('symptomList');
+            
+            symptoms.forEach((symptom, index) => {
+                const symptomItem = document.createElement('div');
+                symptomItem.className = 'symptom-item';
+                
+                const symptomText = document.createElement('div');
+                symptomText.className = 'symptom-text';
+                symptomText.textContent = symptom;
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                // Opsi Ya
+                const yesOption = document.createElement('div');
+                yesOption.className = 'option';
+                
+                const yesInput = document.createElement('input');
+                yesInput.type = 'radio';
+                yesInput.name = `symptom${index}`;
+                yesInput.id = `symptom${index}Yes`;
+                yesInput.value = 'Ya';
+                
+                const yesLabel = document.createElement('label');
+                yesLabel.htmlFor = `symptom${index}Yes`;
+                yesLabel.textContent = 'Ya';
+                
+                yesOption.appendChild(yesInput);
+                yesOption.appendChild(yesLabel);
+                
+                // Opsi Tidak
+                const noOption = document.createElement('div');
+                noOption.className = 'option';
+                
+                const noInput = document.createElement('input');
+                noInput.type = 'radio';
+                noInput.name = `symptom${index}`;
+                noInput.id = `symptom${index}No`;
+                noInput.value = 'Tidak';
+                
+                const noLabel = document.createElement('label');
+                noLabel.htmlFor = `symptom${index}No`;
+                noLabel.textContent = 'Tidak';
+                
+                noOption.appendChild(noInput);
+                noOption.appendChild(noLabel);
+                
+                optionsDiv.appendChild(yesOption);
+                optionsDiv.appendChild(noOption);
+                
+                symptomItem.appendChild(symptomText);
+                symptomItem.appendChild(optionsDiv);
+                
+                symptomList.appendChild(symptomItem);
+            });
+        }
+
+        // Fungsi untuk mengumpulkan data form
+        function collectFormData() {
+            const formData = {
+                age: document.getElementById('age').value,
+                gender: document.querySelector('input[name="gender"]:checked')?.value
+            };
+
+            // Kumpulkan data gejala
+            symptoms.forEach((_, index) => {
+                const fieldName = symptomFieldMap[index];
+                if (fieldName) {
+                    const selectedOption = document.querySelector(`input[name="symptom${index}"]:checked`);
+                    formData[fieldName] = selectedOption ? selectedOption.value : null;
+                }
+            });
+
+            return formData;
+        }
+
+        // Fungsi untuk validasi form
+        function validateForm(data) {
+            if (!data.age || !data.gender) {
+                alert('Harap lengkapi semua data personal (usia dan jenis kelamin)');
+                return false;
+            }
+
+            let unansweredCount = 0;
+            symptoms.forEach((_, index) => {
+                const selectedOption = document.querySelector(`input[name="symptom${index}"]:checked`);
+                if (!selectedOption) {
+                    unansweredCount++;
+                }
+            });
+
+            if (unansweredCount > 0) {
+                alert(`Harap jawab semua ${unansweredCount} gejala yang belum diisi`);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Fungsi untuk mengirim data ke backend
+        async function sendPredictionToBackend(formData) {
+            try {
+                console.log('📤 Mengirim data ke backend:', formData);
+                
+                const response = await fetch('/prediksi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('📥 Response dari backend:', result);
+                
+                return result;
+
+            } catch (error) {
+                console.error('❌ Error mengirim data:', error);
+                throw error;
+            }
+        }
+
+        // Fungsi utama untuk prediksi
+        async function analyzeSymptoms() {
+            const formData = collectFormData();
+            
+            if (!validateForm(formData)) {
+                return;
+            }
+
+            // Tampilkan loading
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Memproses...';
+            submitBtn.disabled = true;
+
+            try {
+                const result = await sendPredictionToBackend(formData);
+                
+                if (result.success) {
+                    displayPredictionResult(result, formData);
+                } else {
+                    alert('Error: ' + (result.error || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat memproses prediksi. Silakan coba lagi.');
+                
+                // Fallback ke prediksi lokal
+                fallbackPrediction(formData);
+            } finally {
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // FUNGSI UNTUK MENAMPILKAN HASIL PREDIKSI - TANPA PERSENTASE
+        function displayPredictionResult(result, formData) {
+            const resultContainer = document.getElementById('resultContainer');
+            const patientInfo = document.getElementById('patientInfo');
+            const predictionMain = document.getElementById('predictionMain');
+            const predictionEnglish = document.getElementById('predictionEnglish');
+            const riskIndicator = document.getElementById('riskIndicator');
+            const symptomsSummary = document.getElementById('symptomsSummary');
+            const recommendation = document.getElementById('recommendation');
+
+            // Tampilkan info pasien
+            patientInfo.innerHTML = `
+                <p><strong>Usia:</strong> ${formData.age} tahun</p>
+                <p><strong>Jenis Kelamin:</strong> ${formData.gender}</p>
+            `;
+
+            // Tampilkan hasil prediksi
+            const diagnosis = result.diagnosis || (result.prediction === 1 ? 'Berisiko Diabetes' : 'Normal');
+            predictionMain.textContent = diagnosis;
+            
+            // HANYA PAKAI SISTEM WARNA - TANPA PERSENTASE
+            if (diagnosis === 'Berisiko Diabetes') {
+                predictionEnglish.textContent = '(Perlu Perhatian Medis)';
+                riskIndicator.textContent = '🔴';
+                riskIndicator.className = 'risk-indicator risk-high';
+            } else {
+                predictionEnglish.textContent = '(Kondisi Baik)';
+                riskIndicator.textContent = '🟢';
+                riskIndicator.className = 'risk-indicator risk-low';
+            }
+
+            // Tampilkan ringkasan gejala
+            let yesSymptoms = [];
+            symptoms.forEach((symptom, index) => {
+                const selectedOption = document.querySelector(`input[name="symptom${index}"]:checked`);
+                if (selectedOption && selectedOption.value === 'Ya') {
+                    yesSymptoms.push(symptom);
+                }
+            });
+
+            let symptomsHTML = `<p><strong>Gejala yang dialami:</strong> ${yesSymptoms.length} dari ${symptoms.length}</p>`;
+            if (yesSymptoms.length > 0) {
+                symptomsHTML += `<ul style="margin-left: 20px; margin-top: 10px;">`;
+                yesSymptoms.forEach(symptom => {
+                    symptomsHTML += `<li>${symptom}</li>`;
+                });
+                symptomsHTML += `</ul>`;
+            }
+            symptomsSummary.innerHTML = symptomsHTML;
+
+            // Tampilkan rekomendasi
+            recommendation.textContent = recommendations[diagnosis] || recommendations["Normal"];
+
+            // Tampilkan hasil
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fallback prediction jika backend error
+        function fallbackPrediction(formData) {
+            console.log('🔄 Menggunakan fallback prediction');
+            
+            // Logika prediksi sederhana
+            let yesCount = 0;
+            symptoms.forEach((_, index) => {
+                const selectedOption = document.querySelector(`input[name="symptom${index}"]:checked`);
+                if (selectedOption && selectedOption.value === 'Ya') {
+                    yesCount++;
+                }
+            });
+
+            const age = parseInt(formData.age);
+            let prediction, probability;
+
+            if (yesCount <= 2) {
+                prediction = 0;
+                probability = 0.85;
+            } else if (yesCount <= 5) {
+                prediction = 0;
+                probability = 0.70;
+            } else {
+                prediction = 1;
+                probability = 0.65;
+            }
+
+            // Tampilkan hasil fallback
+            displayPredictionResult({
+                success: true,
+                prediction: prediction,
+                probability: probability,
+                diagnosis: prediction === 1 ? 'Berisiko Diabetes' : 'Normal'
+            }, formData);
+        }
+
+        // Fungsi untuk mereset form
+        function resetForm() {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.style.display = 'none';
+            
+            // Reset semua radio button gejala
+            symptoms.forEach((_, index) => {
+                const yesInput = document.getElementById(`symptom${index}Yes`);
+                const noInput = document.getElementById(`symptom${index}No`);
+                if (yesInput) yesInput.checked = false;
+                if (noInput) noInput.checked = false;
+            });
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            createSymptomForm();
+            
+            // Tambahkan event listener untuk tombol prediksi
+            document.getElementById('submitBtn').addEventListener('click', analyzeSymptoms);
+            
+            // Tambahkan event listener untuk tombol reset
+            document.getElementById('resetBtn').addEventListener('click', resetForm);
+        });
+    </script>
+</body>
+</html>
