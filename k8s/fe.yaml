@@ -13,10 +13,12 @@ spec:
         app: diabetes-fe
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
+      - name: diabetes-app
+        image: diabetes-app:latest  # ← SAMA DENGAN BACKEND!
+        imagePullPolicy: Never
         ports:
-        - containerPort: 80
+        - containerPort: 5000
+        command: ["python", "app.py"]
 ---
 apiVersion: v1
 kind: Service
@@ -26,6 +28,6 @@ spec:
   selector:
     app: diabetes-fe
   ports:
-  - port: 80
-    targetPort: 80
+  - port: 8080
+    targetPort: 5000
   type: LoadBalancer
